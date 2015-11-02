@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Upblog - <?=$TITLE?></title>
+<title><?=$TITLE?> - SteGriff</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -23,6 +23,14 @@
 			</ul>
 		</nav>
 	</header>
+	
+	<div class="pager">
+		<p class="wispy pager-info">Next & Previous</p>
+		<ul>
+			<li class="pager-link"><?=link_newer('None')?> <small>(newer)</small></li>
+			<li class="pager-link"><?=link_older('None')?> <small>(older)</small></li>
+		</ul>
+	</div>
 	
 	<article>
 		<?=$UPBLOG?>
