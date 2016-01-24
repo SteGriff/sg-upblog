@@ -2,14 +2,14 @@
 use \Michelf\Markdown;
 
 //URL and Directory setups
-require 'config.php';
+require_once 'config.php';
 require_once 'php-markdown/Michelf/Markdown.php';
 require_once 'php-query/phpQuery.php';
-require 'upblog/summary.php';
-require 'upblog/title.php';
-require 'upblog/posts.php';
-require 'upblog/links.php';
-require 'posts-cache.php';
+require_once 'upblog/summary.php';
+require_once 'upblog/title.php';
+require_once 'upblog/posts.php';
+require_once 'upblog/links.php';
+require_once 'posts-cache.php';
 
 //Oh hey look it's the deploy function
 // Puts the HTML payload of the selected Markdown file into the special $UPBLOG global,

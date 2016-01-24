@@ -37,11 +37,15 @@
 	</article>
 	
 	<footer>
-		<p><time>2014</time> SteGriff - Stephen Griffiths</p>
+		<p><time class="year">2014</time> SteGriff - Stephen Griffiths</p>
 	</footer>
 	
-	<script type="text/javascript">
-	document.getElementsByTagName("time")[0].innerHTML = new Date().getFullYear();
+	<script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+	<script>
+		$(function(){
+			$(".year").text(new Date().getFullYear());
+			$(".summaries").load("summaries.php");
+		});
 	</script>
 </body>
 </html>
