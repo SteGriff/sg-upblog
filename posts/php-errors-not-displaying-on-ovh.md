@@ -1,18 +1,29 @@
 # PHP errors not displaying on OVH even though display_errors = on
 
-This happens because OVH use a custom, optimised PHP infrastructure known as PHP-FPM. There are settings in `.ovhconfig` which determine how PHP-FPM handles things like errors, based on an `environment` setting. When `environment = production`, errors are not displayed. 
+This happens because OVH uses an optimised PHP infrastructure known as PHP-FPM. This system does not respect `php.ini` files
+like PHP-CGI does.
+
+Instead, there are settings in `.ovhconfig` which determine how PHP-FPM handles things like errors,
+based on an `environment` setting. When `environment = production`, errors are not displayed. 
 
 There are a few solutions:
 
-## Change the .ovhconfig environment
+## 1. Change the .ovhconfig environment
 
-Download the `.ovhconfig` file from your web hosting root. Change the `environment` flag from `production` to `development`.
+Download the `.ovhconfig` file from your web hosting root.
+Change the `environment` flag from `production` to `development`.
 	
-## Disable PHP-FPM
+## 2. Disable PHP-FPM
 
-To do this, just delete the `.ovhconfig` file from your website root. I've not tested this.
+You can modify the `.ovhconfig` to force the use of PHP-CGI instead.
+This will allow you to use `php.ini` files. The new content for `.ovhconfig` will be:
 
-## Manually force errors to display
+	app.engine=phpcgi
+	app.engine.version=5.4
+	
+**N.b.** that I have changed this advice from the documented version in which OVH said you should set the engine version to `AUTO`, but this will seemingly give you a very regressive PHP version of 4.4.9!!
+
+## 3. Manually force errors to display
 
 This is the least elegant solution. At the start of the PHP file you want to debug, add:
 
@@ -21,5 +32,4 @@ This is the least elegant solution. At the start of the PHP file you want to deb
 
 ## Source
 
-[Activer l'optimisation PHP sur son Hébergement Mutualisé OVH](https://www.ovh.com/fr/g1175.activer_loptimisation_php_sur_son_hebergement_mutualise_ovh)
-[Google translation to English](https://translate.google.co.uk/translate?sl=auto&tl=en&js=y&prev=_t&hl=en&ie=UTF-8&u=https%3A%2F%2Fwww.ovh.com%2Ffr%2Fg1175.activer_loptimisation_php_sur_son_hebergement_mutualise_ovh&edit-text=&act=url)
+[Enable PHP optimisation with OVH's Shared Hosting](https://www.ovh.co.uk/en/g1175.activer_loptimisation_php_sur_son_hebergement_mutualise_ovh)
