@@ -1,4 +1,7 @@
+# ----- SG -----
+# testing files
 /backup/*
 /test/*
 log*.txt
+sgn_*.*
 Thumbs.db
