@@ -30,7 +30,7 @@ function summary_of($content){
 	return $textContent;
 }
 
-function summaries($limit)
+function summaries($limit = null)
 {
 	global $posts;
 	$keys = array_keys($posts);

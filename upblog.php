@@ -40,7 +40,7 @@ function deploy($filename){
 		
 		// Designer can use the other vars, like $TITLE, if they want to.
 		$TITLE = title_of_current();
-		$URL = $_SERVER['SCRIPT_URI'];
+		$URL = current_url();
 		
 		$IMAGE_SRC = '';
 		if (stripos($UPBLOG, '<img') !== false)
@@ -60,7 +60,7 @@ function deploy($filename){
 	}
 }
 
-function template($name)
+function template($name = null)
 {
 	//If argument given, translate POST dir to TEMPLATE dir
 	// to get corresponding template
@@ -98,7 +98,7 @@ function get_template($md_file)
 // http://blog.com/upblog/NewSchool -> NewSchool
 function requested_blog_post(){
 	//Remove trailing slash/slashes from request URI
-	$request = $_SERVER['REQUEST_URI'];
+	$request = current_path();
 	
 	$pageNamePosition = strpos($request, BLOG_ROOT) + strlen(BLOG_ROOT);
 	$pageName = substr($request, $pageNamePosition);
@@ -242,13 +242,52 @@ function last_char($s)
 // Uses the configured BLOG_ROOT
 function site_root()
 {
-	//SCRIPT_URI is like 'http://stegriff.co.uk/upblog/rerouting/forever/and/a/day/'
-	$siteRoot = $_SERVER['SCRIPT_URI'];
+	//First get the entire requested URL
+	$siteRoot = current_url();
 
+	//Get the BLOG_ROOT from config 
 	$endOfBlogRoot = strpos($siteRoot, BLOG_ROOT) + strlen(BLOG_ROOT);
+	
+	//Pare the current URL down to only the part up-to-and-including the blog root
 	$siteRoot = substr($siteRoot, 0, $endOfBlogRoot);
 	
 	return $siteRoot;
+}
+
+//Get the bit like '/upblog/post-i-want'
+function current_path()
+{
+	if (isset($_SERVER['REQUEST_URI']))
+	{
+		//Apache httpd
+		return $_SERVER['REQUEST_URI'];
+	}
+	else
+	{
+		//IIS hopefully
+		return $_SERVER['HTTP_X_ORIGINAL_URL'];
+	}
+	
+}
+
+//Get the whole address like 'http://stegriff.co.uk/upblog/post-i-want'
+function current_url()
+{
+	if (isset($_SERVER['SCRIPT_URI']))
+	{
+		//Apache httpd
+		//SCRIPT_URI is like 'http://stegriff.co.uk/upblog/rerouting/forever/and/a/day/'
+		return $_SERVER['SCRIPT_URI'];
+	}
+	else
+	{
+		//You better hope it's IIS
+		$scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'
+			? 'https'
+			: 'http';
+		
+		return $scheme . $_SERVER['HTTP_HOST'] . $_SERVER['HTTP_X_ORIGINAL_URL'];
+	}
 }
 
 ?>
