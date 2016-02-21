@@ -1,4 +1,6 @@
-.forest, nav li, .pager-link a
+.forest,
+nav li,
+.pager-link a
 {
 	color: #353B1A;
 }
@@ -7,13 +9,14 @@
 {
 	margin: 30px 0 0 60px;
 }
-.pager ul, nav ul
+.ul-circle
 {
 	list-style-type: circle;
 }
 .pager-link
 {
 	color: #888;
+	letter-spacing: 0.1em;
 }
 
 nav
@@ -33,11 +36,14 @@ nav ul
 	margin: 1em 1em 1em 1.6em;
 }
 
-nav li, .pager-link
+nav li
 {
 	letter-spacing: 0.1em;
+	line-height: 1em;
 }
-nav a, .pager a
+
+nav a,
+.pager a
 {
 	text-decoration: none;
 }
@@ -45,9 +51,10 @@ nav small {
     white-space: nowrap;
 }
 
-h1, nav li, header h2{
+/* Headings */
+
+h1, header h2{
 	text-transform: uppercase;
-	line-height: 1em;
 }
 
 header h1
