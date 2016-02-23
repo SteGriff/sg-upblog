@@ -1,5 +1,24 @@
 <?php
 
+function NoWarnings($errno, $errstr, $errfile, $errline)
+{
+    if (!(error_reporting() & $errno)) {
+        return;
+    }
+
+	if ($errno === E_USER_WARNING)
+	{
+		//Ignore warnings
+		return true;
+	}
+	else
+	{
+		//Allow default handler for 
+		// all other error types
+		return false;
+	}
+}
+
 //Returns an associative array of all posts
 // based on current file system state
 function rebuild_posts()
@@ -9,10 +28,16 @@ function rebuild_posts()
 	//Index all posts by modification date
 	foreach(glob(POSTS . '*.md') as $file) 
 	{
+		//We want to skip directories
+		//Suppress warnings when is_dir returns false
+		set_error_handler("NoWarnings");
+		
 		if (is_dir($file))
 		{
 			continue;
 		}
+		
+		set_error_handler(null);
 		
 		$info = metadata($file);
 		

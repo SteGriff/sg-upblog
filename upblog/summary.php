@@ -23,10 +23,16 @@ function summary_of($content){
 	//Tidy up the text a bit
 	$textContent = trim(strip_tags($textContent));
 
-	//Stop at the space closest to 200 chars (or whatever is configured)
-	$whenToStop = stripos($textContent, ' ', SUMMARY_LENGTH);
-	
-	$textContent = substr($textContent, 0, $whenToStop) . '...';
+	//Stop at the space closest to 200 chars (or whatever is configured) if we can afford to
+	$whenToStop = @strpos($textContent, ' ', SUMMARY_LENGTH);
+	if ($whenToStop !== false)
+	{
+		//A space after 200 chars was found
+		$textContent = substr($textContent, 0, $whenToStop) . '...';
+	}
+
+	//If we didn't find an appropriate stopping point, the whole text is used as summary
+
 	return $textContent;
 }
 
