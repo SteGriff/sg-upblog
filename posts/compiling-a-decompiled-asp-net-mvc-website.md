@@ -1,5 +1,7 @@
 # Compiling a decompiled ASP.Net MVC website
 
+We recently took delivery of a codebase with no code... well, it might actually turn out that the original developer comes through but I started this process anyway! Currently the binaries on the FTP server are the only resource available.
+
 ## Set up the environment
 
  * Make an SVN repo and set it up with trunk/branches
