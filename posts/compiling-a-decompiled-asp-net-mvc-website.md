@@ -7,19 +7,21 @@ We recently took delivery of a codebase with no code... well, it might actually 
  * Make an SVN repo and set it up with trunk/branches
  * Create an empty solution directory in there
  * Download all the `bin` files from the website FTP server
- * Use Telerik JustDecompile to decompile the main named one (`MyWebsite.dll`, let's say)
- * Use the 'Create Project' feature to build a project, put it in newly created project folder in the solution directory.
+ * Use **Telerik JustDecompile** to decompile the main named one (`MyWebsite.dll`, let's say)
+ * Use the 'Create Project' feature in JD to build a project, put it in newly created project folder in the solution directory.
  
 ## Flatten the main project
 
 At this point, the project folder needs to be flattened so that the csproj is in the same directory as all the website files. 
 
  * Hack the csproj in Notepad++ by replacing all instances of `MyWebsite\` with nothing.
- * Add ProjectTypeGuids in web.config, copied from another website project (or these:)
- 
+ * Add ProjectTypeGuids in web.config
+
+You can copy the ProjectTypeGuids from another website project, or you might be able to use these:
+
 	<ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
- 
- * Add IIS stuff to the bottom of web.config, copied from another website project (change the `FlavorProperties` GUID to a new randomly generated GUID)
+	
+Add IIS stuff to the bottom of web.config, copied from another website project (change the `FlavorProperties` GUID to a new randomly generated GUID):
 
 	<ProjectExtensions>
 		<VisualStudio>
@@ -39,7 +41,7 @@ At this point, the project folder needs to be flattened so that the csproj is in
 		  </FlavorProperties>
 		</VisualStudio>
 	</ProjectExtensions>
- 
+
 ## Decompile references
 
 Now I went back to navigating the project tree in JustDecompile to discover any other projects I needed
