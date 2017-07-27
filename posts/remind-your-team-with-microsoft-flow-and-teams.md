@@ -32,6 +32,15 @@ Well the last one was a dealbreaker... I really wanted a nice multi-line message
 
 ## Attempt 2 - Webhook
 
-After [Ducking][ddg] around for a while
+After [Ducking][ddg] around for a while 
+
+I found this
+https://blogs.technet.microsoft.com/stefan_stranger/2016/11/04/use-microsoft-flow-to-send-a-message-to-microsoft-teams/
+
 
 [ddg]: https://duckduckgo.com
+
+Combo of these two pages showed me how to do markdown messages using textFormat prop:
+
+https://docs.microsoft.com/en-us/bot-framework/rest-api/bot-framework-rest-connector-create-messages
+https://msdn.microsoft.com/en-us/microsoft-teams/botsmessages#message-format
