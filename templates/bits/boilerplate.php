@@ -8,5 +8,6 @@
 <?=twitter_card()?>
 
 <link rel="shortcut icon" href="/favicon.ico" />
-<link rel="stylesheet" type="text/css" href="/sgn_style.css" />
-<link rel="stylesheet" type="text/css" href="/upblog/sgn_blog.css" />
+<link rel="stylesheet" href="/sgn_style.css" />
+<link rel="stylesheet" href="/upblog/css/tachyons.css" />
+<link rel="stylesheet" href="/upblog/css/sgn_blog.css" />
