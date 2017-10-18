@@ -19,4 +19,12 @@ Now, if you need this flag to be turned on for regular build on your dev machine
 
 Automating this process is left as an exercise for you :)
 
+## Why
+
+Registering for COM interop causes MSBuild to write registry keys in order to register your assembly.
+
+## Edit
+
+Ah, an even better idea is to change to `<RegisterForComInterop>false</RegisterForComInterop>` only within the `PropertyGroup` for `Release|Any CPU` or whatever configuration your VSTS uses! Then developers can continue to use Debug mode, which will generate the TLB needed for proper local debugging of COM components, but the build server will not try to generate it.
+
 [com-interop]: ./add-a-reference-to-vsto-project-from-vba-editor
