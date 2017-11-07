@@ -22,7 +22,9 @@ Use `Get-AzureRmSubscription` to get a list of subscriptions. You can find the o
 	$subs = Get-AzureRmSubscription
 	$subs | Where Name -like '*MPN*'
 
-This would find a subscription where the name contains 'MPN'. **Beware** that the `-Contains` operator in PowerShell is for Array contents, not String contents.
+**N.b.** The returned fields from this command vary in name in different versions of Azure PowerShell tools. If you just installed them, you will be up to date with a version >4.x. But if your version is around 2.x, the `Name` field will be called `SubscriptionName`.
+
+This would find a subscription where the name contains 'MPN'. **Beware** that the `-Contains` operator in PowerShell is for Array contents, not String contents, so we want `-Like`.
 
 `Where` is an alias of `Where-Object`, and the comparison syntax above is a shorter version of `{$_.Name -like 'x'}`. The [shorter `Where` syntax was introduced in PowerShell 3.0][whereobject]. 
 
@@ -44,7 +46,7 @@ To break down the snippet above:
 
 	* `$subs` - our list of subscription objects (could be replaced with the call to `Get-AzureRmSubscription` itself)
 	* `| Where Name -like '*MPN*'` as in previous section - filter the objects to just the subscription of interest (the one with 'MPN' in its name)
-	* `| Select @{n='SubscriptionName';e={$_.Name}}` transform this into a new object with a SubscriptionName property equal to the Name of the subscription. The *reason* for this bit is that `Select-AzureRmSubscription` will accept a piped parameter but it **must** be called `SubscriptionName`.
+	* `| Select @{n='SubscriptionName';e={$_.Name}}` transform this into a new object with a SubscriptionName property equal to the Name of the subscription. The *reason* for this bit is that `Select-AzureRmSubscription` will accept a piped parameter but it **must** be called `SubscriptionName`. If you're using an old Azure Modules version around 2.x, the field will already be called `SubscriptionName` so you wouldn't need this part.
 	* `| Select-AzureRmSubscription` Pipe the SubscriptionName to the cmdlet which switches for us.
 
 I learnt that trick on this Stack answer; [how to pipe objects to a specific parameter][pipespecific]. `Select` is an alias of `Select-Object`, and when creating a hash table which will be converted into an object (`@{n='SubscriptionName';e={$_.Name}}`), both `l` and `n` are apparently acceptable aliases for `Name`, but I can't find docs for this anywhere. `e` is short for `Expression`.
@@ -76,7 +78,7 @@ I like my names in Azure to look like this:
 	paprika          Resource Group
 	paprika-plan     App Service Plan
 	paprika-web      Web App
-	paprikastorage   Storage (hyphens not allowed in name)
+	paprikastorage   Storage (hyphens not allowed for storage accounts)
 	paprika-sql      SQL Server
 	paprika-db       SQL DB (on paprika-sql)
 
@@ -93,18 +95,56 @@ You can create resources with `New-AzureRmResource` and a bunch of parameters.
 
 You absolutely must specify a ResourceType and a Name. It seems that ResourceGroupName is also required. You probably want to specify a region and maybe some other gubbins.
 
+[discovering]: ./discovering-azure-resource-types/
+
 ### Storage Account
 
 To create storage (blob, table, queue...), we need a storage account, and a storage container. On a new subscription, before you can create storage, you need to register (allow) the namespace:
 
 	Register-AzureRmResourceProvider -ProviderNamespace 'Microsoft.Storage'
-	
-The storage account is a resource and is created with `New-AzureRmResource`
+
+The storage account is a resource and can be created with `New-AzureRmResource` or `New-AzureRmStorageAccount`. Thanks to some quirks in the implementation of the former and differences in API versions, using the latter is a lot easier. This is the first snippet where I've used backticks; these are used for line continuation.
 
 	$proj = 'paprika'
 	$eur = 'North Europe'
-	New-AzureRmResource -Name "$proj-stor" -ResourceType 'Microsoft.Storage/storageAccounts' -Location $eur
+	$properties = @{"AccountType"='Standard_LRS'}
+	
+	New-AzureRmResource `
+		-ResourceGroupName $proj `
+		-Name ($proj + "stor") `
+		-ResourceType 'Microsoft.Storage/storageAccounts' `
+		-Location $eur `
+		-Properties $properties `
+		-ApiVersion "2015-06-15" `
+		
+	# OR
+	
+	$storage = New-AzureRmStorageAccount `
+		-Location $eur `
+		-Name ($proj + "stor") `
+		-ResourceGroupName $proj `
+		-SkuName Standard_LRS
 
-[discovering]: ./discovering-azure-resource-types/
+**N.b.** If you set SkuName (AccountType) to ZRS, you will not have access to Queues and Tables, only Blobs.
+
+Now that you have a storage account, you should create a container within it. To start working in relation to the storage account we have just created, we use the `Set-AzureRmCurrentStorageAccount` command (this is because there is no `AzureRm`-flavour command to create a storage container, only a classic `Azure`-flavour one, and old-school commands have no concept of ResourceGroup):
+
+	Set-AzureRmCurrentStorageAccount -ResourceGroupName $proj -Name ($proj + "stor")
+	Get-AzureRmContext
+
+Running `Get-AzureRmContext` will show that our `CurrentStorageAccount` has changed.
+
+Now we can create the container using `New-AzureStorageContainer`:
+
+	New-AzureStorageContainer -Name 'files'
+
+Let's create a storage queue. If you captured a `$storage` object during account creation, great! Otherwise you can retrieve it with the first line below:
+
+	# Get our storage context and view it
+	$storage = Get-AzureRmStorageAccount -ResourceGroupName $proj -Name ($proj + "stor")
+	$storage.Context
+	
+	# Make a queue (won't work on ZRS)
+	New-AzureStorageQueue -Context $storage.Context -Name 'test-queue' 
 
 
