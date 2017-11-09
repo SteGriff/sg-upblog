@@ -125,7 +125,9 @@ The storage account is a resource and can be created with `New-AzureRmResource` 
 		-ResourceGroupName $proj `
 		-SkuName Standard_LRS
 
-**N.b.** If you set SkuName (AccountType) to ZRS, you will not have access to Queues and Tables, only Blobs.
+**N.b.** If you set SkuName (AccountType) to ZRS, [you will not have access to Queues and Tables][zrs], only Blobs.
+
+[zrs]: ./new-azurestoragequeue-no-queue-endpoint-configured/
 
 Now that you have a storage account, you should create a container within it. To start working in relation to the storage account we have just created, we use the `Set-AzureRmCurrentStorageAccount` command (this is because there is no `AzureRm`-flavour command to create a storage container, only a classic `Azure`-flavour one, and old-school commands have no concept of ResourceGroup):
 
@@ -147,4 +149,42 @@ Let's create a storage queue. If you captured a `$storage` object during account
 	# Make a queue (won't work on ZRS)
 	New-AzureStorageQueue -Context $storage.Context -Name 'test-queue' 
 
+Okay, that should be it! You can use similar commands to create table or blob storage. Let's take a quick tour of one more well-used feature; web apps.
 
+### Web App
+
+Before you create your first web-based components, you will need to authorise the namespace for them, like we did for storage!
+
+	Register-AzureRmResourceProvider -ProviderNamespace 'Microsoft.Web'
+	
+This has now authorised us for the relevant components, `Microsoft.Web/serverFarms` and `Microsoft.Web/sites`.
+
+First we have to create an App Service Plan (Azure calls these 'serverFarms' internally). As before, you have a choice of cmdlets; the bog-standard `New-AzureRmResource` and the more specific `New-AzureRmAppServicePlan`. Here's the most basic call; this will default to an S1 service plan.
+
+	New-AzureRmResource `
+		-ResourceGroupName $proj `
+		-Name "$proj-plantest-1" `
+		-ResourceType 'Microsoft.Web/serverFarms' `
+		-Location $eur
+		
+Specifying the Sku (the pricing tier) is pretty unwieldy, but you can do it with a hashtable like this:
+
+	$sku = @{name='B1'; tier='Basic'; size='B1'; family='B'; capacity=1}
+	New-AzureRmResource `
+		-ResourceGroupName $proj `
+		-Name "$proj-plantest-2" `
+		-ResourceType 'Microsoft.Web/serverFarms' `
+		-Location $eur `
+		-Sku $sku
+
+Here's the syntax for the more merciful cmdlet of the two:
+	
+	New-AzureRmAppServicePlan `
+		-Location $eur `
+		-Tier Basic `
+		-NumberofWorkers 1 `
+		-WorkerSize Small `
+		-ResourceGroupName $proj `
+		-Name "$proj-plantest-3"
+
+Now that we have a service plan, we can create a web app, hooray!

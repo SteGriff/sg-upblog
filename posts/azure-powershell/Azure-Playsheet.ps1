@@ -12,7 +12,7 @@ $subs = Get-AzureRmSubscription
 $subs | Where Name -like '*MPN*' | Select @{n='SubscriptionName';e={$_.Name}} | Select-AzureRmSubscription
 Get-AzureRmContext
 
-# Simpler selection using new field names
+# Simpler selection using old field names
 $subs = Get-AzureRmSubscription
 $subs | Where SubscriptionName -like '*MPN*' | Select-AzureRmSubscription
 Get-AzureRmContext
@@ -72,3 +72,31 @@ New-AzureRmStorageAccount `
 $storage = Get-AzureRmStorageAccount -ResourceGroupName $proj -Name "sgtesteastusa"
 $storage = Get-AzureRmStorageAccount -ResourceGroupName $proj -Name "sgtestnortheur"
 New-AzureStorageQueue -Context $storage.Context -Name 'test-queue' 
+
+#--------------------------------------
+# Make an app service plan and website
+# Microsoft.Web/serverFarms
+# Microsoft.Web/sites
+
+# Register namespace first
+Register-AzureRmResourceProvider -ProviderNamespace 'Microsoft.Web'
+
+#$sku = @{name='S1'; tier='Standard'; size='S1'; family='S'; capacity=1}
+$sku = @{name='B1'; tier='Basic'; size='B1'; family='B'; capacity=1}
+New-AzureRmResource `
+    -ResourceGroupName $proj `
+    -Name "$proj-plantest-2" `
+    -ResourceType 'Microsoft.Web/serverFarms' `
+    -Location $eur `
+    -Sku $sku
+    
+New-AzureRmAppServicePlan `
+    -Location $eur `
+    -Tier Basic `
+    -NumberofWorkers 1 `
+    -WorkerSize Small `
+    -ResourceGroupName $proj `
+    -Name "$proj-plantest-3"
+
+# New-AzureRmAppServicePlan
+# New-AzureRmWebApp
