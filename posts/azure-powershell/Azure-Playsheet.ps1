@@ -72,3 +72,21 @@ New-AzureRmStorageAccount `
 $storage = Get-AzureRmStorageAccount -ResourceGroupName $proj -Name "sgtesteastusa"
 $storage = Get-AzureRmStorageAccount -ResourceGroupName $proj -Name "sgtestnortheur"
 New-AzureStorageQueue -Context $storage.Context -Name 'test-queue' 
+
+Get-AzureRmSubscription -SubscriptionId "8d6daea2-6038-4360-89a9-9944afa3ff6d" -TenantId "a1846dcc-61b9-448e-bfc6-ca63b9697a1f" |
+    Select @{n='SubscriptionId';e={$_.Id}} |
+    Set-AzureRmContext
+
+Get-Help Set-AzureRmContext -Parameter SubscriptionId
+
+# Failing test of ZRS
+New-AzureRmStorageAccount `
+	-Location $eur `
+	-Name ($proj + "fail") `
+	-ResourceGroupName $proj `
+	-SkuName Standard_ZRS
+
+
+$storage = Get-AzureRmStorageAccount -ResourceGroupName $proj -Name ($proj + "fail")
+
+New-AzureStorageQueue -Context $storage.Context -Name 'test-queue' 
