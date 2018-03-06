@@ -35,6 +35,7 @@ I guess this is for managing clients and the stuff that you re-sell to them. I t
 This one is [allegedly migrating into the Partner Center][migrating] (above) despite looking fairly new.
 
 [migrating]: https://msdn.microsoft.com/partner-center/pac-to-pc-overview
+[vs]: https://villagesoftware.co.uk
 
 ## Where is the portal where I used to download our software benefits?
 
