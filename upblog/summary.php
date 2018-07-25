@@ -48,10 +48,16 @@ function summaries($limit = null)
 	foreach($keys as $k)
 	{	
 		$p = $posts[$k];
+		$pubdt = DateTime::createFromFormat('U', $p['created']);
+		$ymd = $pubdt->format('Y-m-d');
+		$eng = $pubdt->format('jS F Y');
+		$datestring = DateTime::createFromFormat('U', $p['created'])->format('jS F Y');
+		$summ = summary_of_file($p['file']);
 		$summaries_html .= "
 		<section>
 			<h2><a href=\"{$p['link']}\">{$p['title']}</a></h2>
-			<p>" . summary_of_file($p['file']) . "</p>
+			<p>{$summ}</p>
+			<p class=\"f6 i\"><time datetime=\"{$ymd}\">{$eng}</time></p>
 		</section>";
 		
 		if ($limit)
