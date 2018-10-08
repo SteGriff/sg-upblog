@@ -36,29 +36,32 @@ function summary_of($content){
 	return $textContent;
 }
 
-function summaries($limit = null)
+//Get summaries of recent posts - choose type 'html' or 'json' and set optional limit (number)
+function summaries($limit = null, $type = 'html')
 {
 	global $posts;
 	$keys = array_keys($posts);
 	rsort($keys);
 
-	$summaries_html = '';
+	$summaries_text = '';
+	$summaries_obj = [];
 	
 	$i = 0;
 	foreach($keys as $k)
 	{	
 		$p = $posts[$k];
 		$pubdt = DateTime::createFromFormat('U', $p['created']);
-		$ymd = $pubdt->format('Y-m-d');
-		$eng = $pubdt->format('jS F Y');
+		$p['ymd'] = $pubdt->format('Y-m-d');
+		$p['engdt'] = $pubdt->format('jS F Y');
 		$datestring = DateTime::createFromFormat('U', $p['created'])->format('jS F Y');
-		$summ = summary_of_file($p['file']);
-		$summaries_html .= "
+		$p['summary'] = summary_of_file($p['file']);
+		$summaries_text .= "
 		<section>
 			<h2><a href=\"{$p['link']}\">{$p['title']}</a></h2>
-			<p>{$summ}</p>
-			<p class=\"f6 i\"><time datetime=\"{$ymd}\">{$eng}</time></p>
+			<p>{$p['summary']}</p>
+			<p class=\"f6 i\"><time datetime=\"{$p['ymd']}\">{$p['engdt']}</time></p>
 		</section>";
+		$summaries_obj[] = $p;
 		
 		if ($limit)
 		{
@@ -70,5 +73,5 @@ function summaries($limit = null)
 		}
 	}
 	
-	return $summaries_html;
+	return $type === 'html' ? $summaries_text : $summaries_obj;
 }

@@ -8,7 +8,7 @@ if (empty($limit) || !is_numeric($limit))
 	$limit = null;
 }
 
-echo summaries($limit);
+echo json_encode(summaries($limit, 'json'));
 
 ?>
 
